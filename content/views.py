@@ -1,7 +1,7 @@
 from rest_framework.views import APIView, status, Response
 from django.forms.models import model_to_dict
 
-from content.serializers import ContentSerializer
+from .validators import ContentSerializer
 from .models import Content
 
 
@@ -35,7 +35,7 @@ class ContentByIDView(APIView):
         try:
             content = Content.objects.get(id=content_id)
         except Content.DoesNotExist:
-            return Response({"message": "Content not Found"})
+            return Response({"message": "Content not Found"}, status.HTTP_404_NOT_FOUND)
 
         content_dict = model_to_dict(content)
 
@@ -45,7 +45,7 @@ class ContentByIDView(APIView):
         try:
             content = Content.objects.get(id=content_id)
         except Content.DoesNotExist:
-            return Response({"message": "Content not Found"})
+            return Response({"message": "Content not Found"}, status.HTTP_404_NOT_FOUND)
 
         content.delete()
 
@@ -55,7 +55,7 @@ class ContentByIDView(APIView):
         try:
             content = Content.objects.get(id=content_id)
         except Content.DoesNotExist:
-            return Response({"message": "Content not Found"}.status.HTTP_404_NOT_FOUND)
+            return Response({"message": "Content not Found"}, status.HTTP_404_NOT_FOUND)
 
         for key, value in request.data.items():
             setattr(content, key, value)

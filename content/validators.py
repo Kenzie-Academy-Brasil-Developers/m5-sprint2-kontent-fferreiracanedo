@@ -7,9 +7,9 @@ class ContentSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(max_length=50)
     module = serializers.CharField(max_length=100)
-    students = serializers.IntegerField(required=False)
-    description = serializers.CharField(required=False)
-    is_active = serializers.BooleanField(default=False)
+    students = serializers.IntegerField()
+    description = serializers.CharField()
+    is_active = serializers.BooleanField()
 
     def create(self, validated_data: dict):
         return Content.objects.create(**validated_data)
