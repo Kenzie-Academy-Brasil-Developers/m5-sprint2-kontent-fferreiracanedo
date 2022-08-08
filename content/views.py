@@ -1,4 +1,4 @@
-from rest_framework.views import APIView, status, Response
+from rest_framework.views import APIView, status, Response, Request
 from django.forms.models import model_to_dict
 
 from .validators import ContentSerializer
@@ -20,11 +20,12 @@ class ContentView(APIView):
             content_dict,
         )
 
-    def post(self, request):
+    def post(self, request: Request):
 
-        serializer = ContentSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer = ContentSerializer(**request.data)
+        serializer.is_valid()
+        if serializer.errors:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data, status.HTTP_201_CREATED)
 

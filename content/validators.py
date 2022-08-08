@@ -1,18 +1,48 @@
-from rest_framework import serializers
+class ContentSerializer:
+    valid_inputs = {
+        "title": str,
+        "module": str,
+        "description": str,
+        "students": int,
+        "is_active": bool,
+    }
 
-from content.models import Content
+    def __init__(self, *args, **kwargs):
+        self.data = kwargs
+        self.errors = {}
 
+    def is_valid(self):
 
-class ContentSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(max_length=50)
-    module = serializers.CharField(max_length=100)
-    students = serializers.IntegerField()
-    description = serializers.CharField()
-    is_active = serializers.BooleanField()
+        self.clean_data()
 
-    def create(self, validated_data: dict):
-        return Content.objects.create(**validated_data)
+        try:
+            self.validate_required_keys()
+            self.validate_data_types()
 
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+            return True
+        except:
+            return False
+
+    def clean_data(self):
+
+        data_keys = tuple(self.data.keys())
+
+        for key in data_keys:
+            if key not in self.valid_inputs.keys():
+                self.data.pop(key)
+
+    def validate_required_keys(self):
+        for valid_key in self.valid_inputs.keys():
+            if valid_key not in self.data.keys():
+                self.errors[valid_key] = "missing key"
+
+        if self.errors:
+            return self.errors
+
+    def validate_data_types(self):
+        for valid_key, valid_type in self.valid_inputs.items():
+            if type(self.data[valid_key]) is not valid_type:
+                self.errors[valid_key] = f"wrong data type {valid_type.__name__}"
+
+        if self.errors:
+            return self.errors
