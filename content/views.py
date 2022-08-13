@@ -27,7 +27,9 @@ class ContentView(APIView):
         if serializer.errors:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        saveOnDb = Content.objects.create(**serializer.data)
+        saveOnDb_dict = model_to_dict(saveOnDb)
+        return Response(saveOnDb_dict, status.HTTP_201_CREATED)
 
 
 class ContentByIDView(APIView):
